@@ -8,7 +8,7 @@ By using the Snyk IDE extension, we can find the vulnerabilities and fix them wi
 
 ## Running the App
 
-1. Clone this repository and open it in your preferred IDE.
+1. Clone this repository and open it in your preferred IDE (note: this guide is aimed at VSCode).
 2. Build the app by running the `npm install` command.
 3. Transpile TypeScript (`index.ts`) to JavaScript (`index.js`) by running the `tsc` command.
 4. Run the `node index.js` command to run the app, and access it at http://localhost:3000.
