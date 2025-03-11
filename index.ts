@@ -137,13 +137,13 @@ app.get('/files', (req, res) => {
   });
 });
 
-// app.delete('/delete/:fileName', (req, res) => {
-//   const filePath = path.join(__dirname, 'uploads', req.params.fileName);
+app.delete('/delete/:fileName', (req, res) => {
+  const filePath = path.join(__dirname, 'uploads', req.params.fileName);
   
-//   fs.unlink(filePath, (err) => {
-//     if (err) {
-//       return res.status(500).json({ error: '削除に失敗しました' });
-//     }
-//     res.json({ message: 'ファイル削除成功' });
-//   });
-// });
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      return res.status(500).json({ error: '削除に失敗しました' });
+    }
+    res.json({ message: 'ファイル削除成功' });
+  });
+});
