@@ -31,7 +31,7 @@ This repo contains a Path Traversal vulnerability that can be exploited as follo
 
 1. Run a Snyk Code scan and review the Path Traversal vulnerability information and fix advice.
 2. Run the app and open it at http://localhost:3000
-3. Construct a URL similar to http://localhost:3000/download/..%2F..%2F..%2FPictures%2Fhacked.jpg. Each `..%2F` is a "dot dot slash" that moves up a directory.
+3. Construct a URL similar to http://localhost:3000/download/..%2F..%2F..%2F..%2FPictures%2Fhacked.jpg. Each `..%2F` is a "dot dot slash" that moves up a directory.
 4. Copy and paste the URL into your browser. By using this method, an attacker can access any file on your server. This may include source code and configuration files.
 
 ## Suggested Demo Flow
