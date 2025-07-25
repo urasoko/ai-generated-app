@@ -15,7 +15,7 @@ By using the Snyk IDE extension, we can find the vulnerabilities and fix them wi
 
 ## Scanning for Vulnerabilities
 
-Install the [Snyk IDE Extension](https://docs.snyk.io/scm-ide-and-ci-cd-integrations/snyk-ide-plugins-and-extensions) if you haven't done so already.
+Install the [Snyk IDE Extension](https://docs.snyk.io/scm-ide-and-ci-cd-integrations/snyk-ide-plugins-and-extensions) and [Enable DeepCode AI Fix](https://docs.snyk.io/scan-with-snyk/snyk-code/manage-code-vulnerabilities/fix-code-vulnerabilities-automatically#requirements-for-deepcode-ai-fix) if you haven't done so already.
 
 Snyk scans are disabled by default in this workspace. This was done intentionally so that Snyk can be revealed in the middle of the demo flow. Review the included `.vscode` directory for more details.
 
