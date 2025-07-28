@@ -7,7 +7,8 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "postbuild": "mkdir -p dist/tests && cp tests/test.pdf dist/tests/ && cp tests/test.jpg dist/tests/",
-    "test": "jest"
+    "test": "jest",
+    "posttest": "rm -rf uploads"
   },
   "repository": {
     "type": "git",
