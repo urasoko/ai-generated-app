@@ -16,45 +16,62 @@ const supertest_1 = __importDefault(require("supertest"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const index_1 = require("../index");
+const binaryParser = (res, callback) => {
+    res.setEncoding('binary');
+    let data = '';
+    res.on('data', (chunk) => {
+        data += chunk;
+    });
+    res.on('end', () => {
+        callback(null, Buffer.from(data, 'binary'));
+    });
+};
 describe('PDF Upload/Download', () => {
     const uploadDir = path_1.default.join(__dirname, '../uploads');
-    beforeAll(() => {
+    const tempDir = path_1.default.join(__dirname, '../temp');
+    let server;
+    beforeAll((done) => {
+        server = index_1.app.listen(done);
         if (!fs_1.default.existsSync(uploadDir)) {
-            fs_1.default.mkdirSync(uploadDir);
+            fs_1.default.mkdirSync(uploadDir, { recursive: true });
+        }
+        if (!fs_1.default.existsSync(tempDir)) {
+            fs_1.default.mkdirSync(tempDir, { recursive: true });
         }
     });
-    afterAll(() => {
+    afterAll((done) => {
         fs_1.default.rmSync(uploadDir, { recursive: true, force: true });
+        fs_1.default.rmSync(tempDir, { recursive: true, force: true });
+        server.close(done);
     });
-    describe('Upload PDF', () => {
-        it('should upload a valid PDF file', () => __awaiter(void 0, void 0, void 0, function* () {
-            const res = yield (0, supertest_1.default)(index_1.app)
-                .post('/upload')
-                .attach('pdf', path_1.default.join(__dirname, 'test.pdf'));
-            expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('File uploaded');
-        }));
-        it('should not upload an invalid file type', () => __awaiter(void 0, void 0, void 0, function* () {
-            const res = yield (0, supertest_1.default)(index_1.app)
-                .post('/upload')
-                .attach('pdf', path_1.default.join(__dirname, 'test.jpg'));
-            expect(res.statusCode).toBe(400);
-            expect(res.text).toBe('No file uploaded.');
-        }));
-    });
-    describe('Download PDF', () => {
-        it('should download an existing PDF file', () => __awaiter(void 0, void 0, void 0, function* () {
-            const filename = 'test.pdf';
-            const filePath = path_1.default.join(uploadDir, filename);
-            fs_1.default.writeFileSync(filePath, 'test content');
-            const res = yield (0, supertest_1.default)(index_1.app).get(`/download/${filename}`);
-            expect(res.statusCode).toBe(200);
-            expect(res.text).toBe('test content');
-        }));
-        it('should return 404 for a non-existing PDF file', () => __awaiter(void 0, void 0, void 0, function* () {
-            const res = yield (0, supertest_1.default)(index_1.app).get('/download/nonexistent.pdf');
-            expect(res.statusCode).toBe(404);
-            expect(res.text).toBe('File not found');
-        }));
-    });
+    it('should upload a valid PDF, then be able to download it', () => __awaiter(void 0, void 0, void 0, function* () {
+        const testPdfPath = path_1.default.join(__dirname, 'test.pdf');
+        const uploadRes = yield (0, supertest_1.default)(server)
+            .post('/upload')
+            .attach('pdf', testPdfPath);
+        expect(uploadRes.statusCode).toBe(200);
+        expect(uploadRes.text).toContain('File uploaded:');
+        const filename = uploadRes.text.split(': ')[1];
+        const downloadedFilePath = path_1.default.join(tempDir, filename);
+        const downloadRes = yield (0, supertest_1.default)(server)
+            .get(`/download/${filename}`)
+            .parse(binaryParser);
+        expect(downloadRes.statusCode).toBe(200);
+        fs_1.default.writeFileSync(downloadedFilePath, downloadRes.body);
+        const originalFile = fs_1.default.readFileSync(testPdfPath);
+        const downloadedFile = fs_1.default.readFileSync(downloadedFilePath);
+        expect(originalFile).toEqual(downloadedFile);
+    }));
+    it('should not upload an invalid file type', () => __awaiter(void 0, void 0, void 0, function* () {
+        const testJpgPath = path_1.default.join(__dirname, 'test.jpg');
+        const res = yield (0, supertest_1.default)(server)
+            .post('/upload')
+            .attach('pdf', testJpgPath);
+        expect(res.statusCode).toBe(400);
+        expect(res.text).toBe('No file uploaded.');
+    }));
+    it('should return 404 for a non-existing PDF file', () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(server).get('/download/nonexistent.pdf');
+        expect(res.statusCode).toBe(404);
+    }));
 });

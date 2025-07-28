@@ -4,7 +4,16 @@ import fs from 'fs';
 import path from 'path';
 
 export const app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  },
+});
 
 app.use(express.static('public'));
 
@@ -16,14 +25,10 @@ app.post('/upload', upload.single('pdf'), (req, res) => {
 });
 
 app.get('/download/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'uploads', req.params.filename);
+  const filePath = path.join(process.cwd(), 'uploads', req.params.filename);
   const fileStream = fs.createReadStream(filePath);
   fileStream.on('error', () => {
     res.status(404).send('File not found');
   });
   fileStream.pipe(res);
-});
-
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
 });
