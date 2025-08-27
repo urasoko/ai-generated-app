@@ -50,8 +50,9 @@ describe('PDF Upload/Download', () => {
             .post('/upload')
             .attach('pdf', testPdfPath);
         expect(uploadRes.statusCode).toBe(200);
-        expect(uploadRes.text).toContain('File uploaded:');
-        const filename = uploadRes.text.split(': ')[1];
+        expect(uploadRes.text).toContain('File uploaded successfully.');
+        const files = fs_1.default.readdirSync(uploadDir);
+        const filename = files[0];
         const downloadedFilePath = path_1.default.join(tempDir, filename);
         const downloadRes = yield (0, supertest_1.default)(server)
             .get(`/download/${filename}`)

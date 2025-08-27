@@ -25,7 +25,7 @@ exports.app.post('/upload', upload.single('pdf'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
-    res.send(`File uploaded: ${req.file.filename}`);
+    res.send(`File uploaded successfully.`);
 });
 exports.app.get('/download/:filename', (req, res) => {
     const filePath = path_1.default.join(process.cwd(), 'uploads', req.params.filename);
