@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/server.js",
+    "prebuild": "npm install",
     "build": "tsc",
     "postbuild": "mkdir -p dist/tests && cp tests/test.pdf dist/tests/ && cp tests/test.jpg dist/tests/",
     "test": "jest",
